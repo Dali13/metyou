@@ -1,0 +1,7 @@
+<% if @posts.try(:any?) %>
+<%= will_paginate %>
+<ul class="posts">
+  <%= render @posts %>
+</ul>
+<%= will_paginate %>
+<% end %>

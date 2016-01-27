@@ -1,0 +1,48 @@
+@import "bootstrap-sprockets";
+@import "bootstrap";
+
+/*flash*/
+.alert-error {
+    background-color: #f2dede;
+    border-color: #eed3d7;
+    color: #b94a48;
+    text-align: left;
+ }
+
+.alert-alert {
+    background-color: #f2dede;
+    border-color: #eed3d7;
+    color: #b94a48;
+    text-align: left;
+ }
+
+.alert-success {
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+    color: #468847;
+    text-align: left;
+ }
+
+.alert-notice {
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+    color: #468847;
+    text-align: left;
+ }
+ 
+.collapsing {
+  -webkit-transition: height .05s ease;
+       -o-transition: height .05s ease;
+          transition: height .05s ease;
+}
+
+#city-user-profile {
+    display: block;
+    line-height: 1.428571429;
+    color: #999;
+}
+
+.show-user-glyphicon {
+    margin-bottom: 10px;
+    margin-right: 10px;
+}

@@ -1,0 +1,16 @@
+      <%= form_for(resource, as: resource_name, url: session_path(resource_name), :html => {class: 'navbar-form navbar-right'}) do |f| %>
+      <!--<form id="signin" class="navbar-form navbar-right" role="form" pmbx_context="8FD05FC2-B84C-46DD-82B4-13A694684E25">-->
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                            <%= f.email_field :email, placeholder: "Email Adress", class: "form-control" %>
+                            <!--<input id="email" type="email" class="form-control" name="email" value="" placeholder="Email Address" pmbx_context="B3983177-5C2D-4108-8E62-C3B105BA03CA">                                        -->
+                        </div>
+
+                        <div class="input-group">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                            <%= f.password_field :password, autocomplete: "off", placeholder: "Password", class: "form-control" %>
+                            <!--<input id="password" type="password" class="form-control" name="password" value="" placeholder="Password" pmbx_context="CACAE3AA-820D-4859-8322-F85F7B1E784F">                                        -->
+                        </div>
+
+                        <%= f.submit "Login", class: "btn btn-success" %>
+      <% end %>

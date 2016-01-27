@@ -1,0 +1,25 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Our eyes met</h3>
+  </div>
+  <div class="panel-body">
+    <%= form_for(current_user, :html => {class: 'form-group'}) do |f| %>
+      
+      
+      <%= f.label :username %>
+      <%= f.text_field :username, class: 'form-control', autofocus: true, placeholder: "Precise your username" %>
+      
+      <%= f.label :date_of_birth %>
+      <%= f.date_field :date_of_birth, class: 'form-control', id: "date-of-birth" %>
+      </br>
+      <%= f.label :description %>
+      <%= f.text_area :description, class: 'form-control' %>
+      
+      <%= f.file_field :avatars, multiple: true %>
+      
+      <%= f.submit "Save your profile", class: "btn btn-primary" %>
+    <% end %>
+    
+
+  </div>
+</div>
