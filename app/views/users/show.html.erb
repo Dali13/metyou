@@ -31,7 +31,7 @@
             </div>
     </div>
           <div class: "col-offset-1 col-md-3">
-            <h4> Bhaumik Patel</h4>
+            <h4> <%= current_user.username if current_user.username %></h4>
             <small id="city-user-profile"><cite title="San Francisco, USA">San Francisco, USA <i class="glyphicon glyphicon-map-marker show-user-glyphicon">
             </i></cite></small>
             <p>
@@ -53,7 +53,8 @@
     <div class="col-md-9">
     <!-- Bottom switcher of slider -->
       <div class="col-md-3">
-        <a class="thumbnail" id="carousel-selector-0"><img src="http://placehold.it/200x200&text=one"></a>
+        <a class="thumbnail" id="carousel-selector-0"><%= image_tag @album.avatar.url %></a>
+        <!--<a class="thumbnail" id="carousel-selector-0"><img src="http://placehold.it/200x200&text=one"></a>-->
       </div>
 
       <div class="col-md-3">

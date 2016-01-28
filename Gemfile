@@ -19,7 +19,7 @@ gem 'will_paginate-bootstrap'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'jquery-turbolinks'
-gem 'carrierwave', github: 'carrierwaveuploader/carrierwave'
+gem 'carrierwave'
 gem 'sdoc', '~> 0.4.0', group: :doc
 
 

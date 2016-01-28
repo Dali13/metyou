@@ -1,7 +1,7 @@
 class User < ActiveRecord::Base
-  require 'carrierwave/orm/activerecord'
   has_many :posts, dependent: :destroy
-  mount_uploaders :avatars, AvatarUploader
+  has_many :albums, dependent: :destroy
+  accepts_nested_attributes_for :albums
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
