@@ -1,6 +1,7 @@
 class User < ActiveRecord::Base
   has_many :posts, dependent: :destroy
   has_many :albums, dependent: :destroy
+  # validate :albums_count_within_bounds, on: :update
   accepts_nested_attributes_for :albums
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
@@ -10,6 +11,11 @@ class User < ActiveRecord::Base
          
          
     # private
+    
+    # def albums_count_within_bounds
+    #   return if self.albums.blank?
+    #   errors.add(:base, "Too many photos") if self.albums.size > 1
+    # end
     #   def self.logins_before_captcha
     #     3
     #   end

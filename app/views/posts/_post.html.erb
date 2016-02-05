@@ -1,7 +1,25 @@
-<li id="post-<%= post.id %>">
-  <span class="title"><%= link_to post.title, post %></span>
-  <span class="content"><%= post.description %></span>
-  <span class="timestamp">
-    Posted <%= time_ago_in_words(post.created_at) %> ago.
-  </span>
-</li>
+<%= link_to post_path(post), class: "list-group-item" do %>
+  <div class="media col-md-3">
+    <figure>
+      <img class="media-object img-rounded img-responsive"  id="avatar-post" src="http://placehold.it/350x250" alt="placehold.it/350x250">
+    </figure>
+  </div>
+  <div class="col-md-7">
+    <h4 class="list-group-item-heading"><%= post.title %></h4>
+    <p class="list-group-item-text">
+      <small id="city-user-profile">
+        <cite><%= post.city %> - <%= post.postal_code %>
+        <i class="glyphicon glyphicon-map-marker show-user-glyphicon"></i>
+        </cite>
+      </small>
+      <%=h truncate(post.description, length: 40) %>
+    </p>
+  </div>
+  <div class="col-md-2">
+    <i class="glyphicon glyphicon-heart-empty"></i>
+    <p><%=l post.meeting_date %></p>
+  </div>
+  <div class="clearfix"></div>
+<% end %>
+
+

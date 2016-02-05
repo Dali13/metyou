@@ -1,7 +1,7 @@
 class PostsController < ApplicationController
-  require 'auto_compeletion_cp_city'
+require 'auto_compeletion_cp_city'
 before_action :authenticate_user!, only: [:new, :create, :index, :show]
-before_action :opposite_gender_users, only: [:index]
+# before_action :opposite_gender_users, only: [:index]
 
   def new
     @post = current_user.posts.build
@@ -27,9 +27,15 @@ before_action :opposite_gender_users, only: [:index]
   
   
   def index
-    @users.each do |user|
-      @posts = user.posts.paginate(page: params[:page])
+    case current_user.gender when "M"
+      @posts = Post.joins(:user).where(:users => {:gender => "F"}).paginate(page: params[:page])
+    else
+      @posts = Post.joins(:user).where(:users => {:gender => "M"}).paginate(page: params[:page])
     end
+    # @users.each do |user|
+    #   @posts = user.posts.paginate(page: params[:page]) 
+    # end
+    # byebug
   end
   
   def autocomplete
@@ -68,13 +74,13 @@ before_action :opposite_gender_users, only: [:index]
   end
 
     private
-    def opposite_gender_users
-      case current_user.gender when "M"
-      @users = User.where( gender: "F")
-      else
-      @users = User.where( gender: "M")
-      end
-    end
+    # def opposite_gender_users
+    #   case current_user.gender when "M"
+    #   @users = User.where( gender: "F")
+    #   else
+    #   @users = User.where( gender: "M")
+    #   end
+    # end
     
     def post_params
       params.require(:post).permit(:title, :city, :postal_code, :meeting_date, :description)

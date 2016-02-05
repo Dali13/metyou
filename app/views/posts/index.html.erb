@@ -1,7 +1,14 @@
-<% if @posts.try(:any?) %>
-<%= will_paginate %>
-<ul class="posts">
-  <%= render @posts %>
-</ul>
-<%= will_paginate %>
-<% end %>
+<div class="container">
+  <div class="row">
+		<div class="well">
+      <h1 class="text-center">Posts</h1>
+      <% if !@posts.blank? %>
+      <%= will_paginate %>
+      <div class="list-group">
+        <%= render @posts %>
+      </div>
+      <%= will_paginate %>
+      <% end %>
+    </div>
+  </div>
+</div>

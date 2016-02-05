@@ -15,7 +15,12 @@ Rails.application.routes.draw do
    end
     
    
-   resources :users
+   resources :users do
+     member do
+       delete 'avatar', to: 'users#avatar'
+     end
+   end
+  # resources :albums, only: [:destroy]
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

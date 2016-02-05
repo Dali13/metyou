@@ -12,8 +12,14 @@
     <div class="panel-footer">
     <small>
     <span class="glyphicon glyphicon-time"></span>
-    Posted <%= time_ago_in_words(@post.created_at) %> ago.
+    Posted <%= timeago(@post.created_at) %>
     </small>
     </div>
 </div>
+
+<%= javascript_tag do %>
+  $(function() {
+    $("time.timeago").timeago();
+  });
+<% end %>
     

@@ -16,10 +16,11 @@ gem "recaptcha", require: "recaptcha/rails"
 gem 'validates_timeliness', '~> 4.0'
 gem 'will_paginate', '~> 3.0.6'
 gem 'will_paginate-bootstrap'
-gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'jquery-turbolinks'
 gem 'carrierwave'
+gem 'mini_magick',             '3.8.0'
+gem 'fog',                     '1.36.0'
 gem 'sdoc', '~> 0.4.0', group: :doc
 
 

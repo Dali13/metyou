@@ -1,5 +1,6 @@
 class Post < ActiveRecord::Base
   belongs_to :user
+  #delegate :gender, :to => :user, :allow_nil => true
   default_scope -> { order(created_at: :desc) }
   VALID_CITY_REGEX = /\A[a-zA-Z\u0080-\u024F\s\/\-\)\(\`\.\"\']+\z/
   VALID_POSTAL_REGEX = /\A+[0-9]+\z/
