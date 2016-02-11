@@ -20,7 +20,7 @@ class Post < ActiveRecord::Base
                  :on_or_after => lambda { 5.years.ago },
                  :on_or_after_message => "Meeting Date can not be older than 5 years ago"
   validates :description, presence: true, length: { minimum: 20, maximum: 360}
-   
+  validates :gender, presence: true 
   settings index: {
     number_of_shards: 1,
     analysis: {
@@ -56,34 +56,73 @@ class Post < ActiveRecord::Base
     mappings dynamic: 'false' do
       indexes :title, analyzer: 'custom_analyzer', index_options: 'offsets'
       indexes :description, analyzer: 'custom_analyzer', index_options: 'offsets'
-      indexes :city
+      indexes :city, analyzer: 'custom_analyzer'
       indexes :postal_code
-      #indexes :created_at, type: 'date', format: 'dateOptionalTime', index: 'not_analyzed'
+      indexes :gender, index: 'not_analyzed'
+      indexes :created_at, type: 'date', format: 'dateOptionalTime', index: 'not_analyzed'
     end
   end
   
   def as_indexed_json(options={})
-      as_json(only: ['title', 'description', 'city', 'postal_code', 'created_at'])
+      as_json(only: ['id', 'title', 'description', 'city', 'postal_code', 'created_at', 'gender'])
   end
   
-  def self.search(query)
+  def self.female_search(query)
   __elasticsearch__.search(
     {
       query: {
-        multi_match: {
-          query: query,
-          fields: ['title', 'description', 'city', 'postal_code']
+        filtered: {
+          filter:  { 
+            term:  {
+              gender: "M"
+            }
+          },
+          query: {
+            multi_match: {
+              query: query,
+              fields: ['title', 'description', 'city', 'postal_code']
+            }
+          }
         }
       },
       sort: [
         { 
-          created_at: { 
-            order: "desc",
-            missing: "_last",
-            ignore_unmapped: 'true'
+         created_at: { 
+          unmapped_type: 'long',
+          order: 'desc'
+         } 
+        }
+      ]
+    }
+  )
+  end
+  
+  def self.male_search(query)
+  __elasticsearch__.search(
+    {
+      query: {
+        filtered: {
+          filter:  { 
+            term:  {
+              gender: "F"
+            }
+          },
+          query: {
+            multi_match: {
+              query: query,
+              fields: ['title', 'description', 'city', 'postal_code']
+            }
           }
-        } 
-        ]
+        }
+      },
+      sort: [
+        { 
+         created_at: { 
+          unmapped_type: 'long',
+          order: 'desc'
+         } 
+        }
+      ]
     }
   )
   end

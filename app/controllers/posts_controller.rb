@@ -12,6 +12,7 @@ before_action :authenticate_user!, only: [:new, :create, :index, :show]
   
   def create
     @post = current_user.posts.build(post_params)
+    @post.gender = current_user.gender
     if @post.save
       flash[:success] = "Post created"
       redirect_to @post
@@ -35,9 +36,9 @@ before_action :authenticate_user!, only: [:new, :create, :index, :show]
   
   def index
     case current_user.gender when "M"
-      @posts = Post.includes(:user).where(:users => {:gender => "F"}).paginate(page: params[:page])
+      @posts = Post.where(:gender => "F").paginate(page: params[:page])
     else
-      @posts = Post.includes(:user).where(:users => {:gender => "M"}).paginate(page: params[:page])
+      @posts = Post.where(:gender => "M").paginate(page: params[:page])
     end
   end
   
@@ -46,7 +47,7 @@ before_action :authenticate_user!, only: [:new, :create, :index, :show]
     postal_parse = JSON.parse(postal_file)
     @list = []
     if !(ActionController::Base.helpers.sanitize(params[:codePostal]).blank?)
-      search_term = params[:codePostal]
+      search_term = ActionController::Base.helpers.sanitize(params[:codePostal])
       search = /\A#{search_term}/
           postal_parse["cp_autocomplete"].each do |f|
             if search.match("#{f['CP']}",0) && (@list.length < 9)
