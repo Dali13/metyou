@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160126160928) do
+ActiveRecord::Schema.define(version: 20160205125500) do
 
   create_table "albums", force: :cascade do |t|
     t.string   "avatar",     null: false
@@ -21,6 +21,18 @@ ActiveRecord::Schema.define(version: 20160126160928) do
   end
 
   add_index "albums", ["user_id"], name: "index_albums_on_user_id"
+
+  create_table "messages", force: :cascade do |t|
+    t.integer  "sender_id"
+    t.integer  "reply_post_id"
+    t.text     "content"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
+
+  add_index "messages", ["reply_post_id"], name: "index_messages_on_reply_post_id"
+  add_index "messages", ["sender_id", "reply_post_id"], name: "index_messages_on_sender_id_and_reply_post_id", unique: true
+  add_index "messages", ["sender_id"], name: "index_messages_on_sender_id"
 
   create_table "posts", force: :cascade do |t|
     t.string   "title",        null: false

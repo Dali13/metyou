@@ -23,19 +23,22 @@ before_action :authenticate_user!, only: [:new, :create, :index, :show]
   
   def show
     @post = Post.find(params[:id])
+    if current_user.reply_posts.include?(@post)
+      @message = nil
+    else
+      @message = current_user.sent_messages.build(reply_post_id: @post.id)
+    end
   end
+  
+
   
   
   def index
     case current_user.gender when "M"
-      @posts = Post.joins(:user).where(:users => {:gender => "F"}).paginate(page: params[:page])
+      @posts = Post.includes(:user).where(:users => {:gender => "F"}).paginate(page: params[:page])
     else
-      @posts = Post.joins(:user).where(:users => {:gender => "M"}).paginate(page: params[:page])
+      @posts = Post.includes(:user).where(:users => {:gender => "M"}).paginate(page: params[:page])
     end
-    # @users.each do |user|
-    #   @posts = user.posts.paginate(page: params[:page]) 
-    # end
-    # byebug
   end
   
   def autocomplete
@@ -73,17 +76,29 @@ before_action :authenticate_user!, only: [:new, :create, :index, :show]
     end
   end
 
-    private
-    # def opposite_gender_users
-    #   case current_user.gender when "M"
-    #   @users = User.where( gender: "F")
-    #   else
-    #   @users = User.where( gender: "M")
-    #   end
-    # end
+  def send_message
+  @message = current_user.sent_messages.build(message_params)
+  @message.reply_post_id = params[:id]
+    if @message.save
+      flash[:success] = "Message Sent"
+      redirect_to post_path(@message.reply_post)
+    else
+      flash.now[:danger] = "An error has occured. Please try again"
+      render post_path(@message.reply_post)
+    end
+  end
+
+   
     
+
+    private
+
     def post_params
       params.require(:post).permit(:title, :city, :postal_code, :meeting_date, :description)
+    end
+    
+    def message_params
+      params.require(:message).permit(:content)
     end
     
 end

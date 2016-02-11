@@ -12,14 +12,20 @@ Rails.application.routes.draw do
      collection do
        post '/autocomplete', to: 'posts#autocomplete'
      end
+     member do
+       post 'send_message', to: 'posts#send_message'
+     end
+     
    end
-    
+  #resources :messages, only: [:create]
    
    resources :users do
      member do
        delete 'avatar', to: 'users#avatar'
      end
    end
+   
+   get '/search' => 'search#search'
   # resources :albums, only: [:destroy]
 
   # Example of regular route:

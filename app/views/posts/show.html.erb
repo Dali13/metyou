@@ -17,6 +17,19 @@
     </div>
 </div>
 
+<% if !@message.blank? %>
+  <%= form_for(@message, url: send_message_post_path(@message.reply_post_id)) do |f| %>
+  <div class="form-group">
+  <%= f.text_area :content, class: "form-control", placeholder: "write a message" %>
+  <%= f.submit "send", class: "btn btn-primary" %>
+  <% end %>
+  </div>
+<% else %>
+<div><p> Already sent a message!</p></div>
+<% end %>
+  
+
+
 <%= javascript_tag do %>
   $(function() {
     $("time.timeago").timeago();

@@ -21,6 +21,8 @@ gem 'jquery-turbolinks'
 gem 'carrierwave'
 gem 'mini_magick',             '3.8.0'
 gem 'fog',                     '1.36.0'
+gem 'elasticsearch-model'
+gem 'elasticsearch-rails'
 gem 'sdoc', '~> 0.4.0', group: :doc
 
 

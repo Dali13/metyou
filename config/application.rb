@@ -25,6 +25,9 @@ module Workspace
     
     # Include the authenticity token in remote forms.
     config.action_view.embed_authenticity_token_in_remote_forms = true
+    
+    # Display information about Search Request (ElasticSearch)
+    require 'elasticsearch/rails/instrumentation'
 
   end
 end

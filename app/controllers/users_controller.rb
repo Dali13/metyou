@@ -10,12 +10,11 @@ end
 def edit
   @album = current_user.albums.build
   
-  @album_existant = Album.find_by(user_id: current_user[:id])
-  
-  if @album_existant.blank? || @album_existant.avatar.blank?
-    @avatar = nil
+  if current_user.albums.count > 0
+  album_existant = Album.find_by(user_id: current_user[:id])
+  @avatar = album_existant.avatar
   else
-    @avatar = @album_existant.avatar
+  @avatr = nil
   end
 end
 
@@ -29,15 +28,9 @@ def update
       redirect_to edit_user_path(current_user)
     end
   else
-    if current_user.update_attributes(edit_user_params)
-      @album = current_user.albums.create(:avatar => params[:albums]['avatar'], :user_id => current_user.id)
-      if @album.errors.blank?
+    if (current_user.update_attributes(edit_user_params) && current_user.albums.create(:avatar => params[:albums]['avatar'], :user_id => current_user.id))
         flash[:success] = 'Your profile and avatar was updated'
         redirect_to current_user
-      else
-        flash[:danger] = 'Too many avatars!'
-        redirect_to edit_user_path(current_user)
-      end
     else
       flash[:danger] = 'An error has occured, Please try again!'
       redirect_to edit_user_path(current_user)
