@@ -11,9 +11,12 @@ Rails.application.routes.draw do
    resources :posts do
      collection do
        post '/autocomplete', to: 'posts#autocomplete'
+       get '/search' => 'posts#search'
+       get '/unpublished' => 'posts#unpublished'
      end
      member do
        post 'send_message', to: 'posts#send_message'
+       patch 'publish', to: 'posts#publish'
      end
      
    end
@@ -21,11 +24,20 @@ Rails.application.routes.draw do
    
    resources :users do
      member do
+       get 'myposts', to: 'users#myposts'
        delete 'avatar', to: 'users#avatar'
      end
+     collection do
+       get 'settings', to: 'users#settings'
+       patch 'update_password', to: 'users#update_password'
+     end
    end
+  require 'sidekiq/web' 
+  authenticate :user, lambda { |u| u.admin? } do
+    mount Sidekiq::Web => '/sidekiq'
+  end
    
-   get '/search' => 'search#search'
+   
   # resources :albums, only: [:destroy]
 
   # Example of regular route:

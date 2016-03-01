@@ -1,13 +1,37 @@
 class Post < ActiveRecord::Base
   include Elasticsearch::Model
-  include Elasticsearch::Model::Callbacks
+  extend FriendlyId
+  friendly_id :slug_candidates, use: :slugged
+  #include Elasticsearch::Model::Callbacks
+  def slug_candidates
+    [
+      :title,
+      [:title, :city]
+    ]
+  end
+  
+  def should_generate_new_friendly_id?
+      slug.blank?
+  end
+  
+  after_commit on: [:update] do
+    __elasticsearch__.index_document if self.published?
+  end
+
+  after_commit on: [:destroy] do
+    __elasticsearch__.delete_document if self.published?
+  end
+  
   belongs_to :user
   has_many :reply_messages, class_name: "Message",
                           foreign_key: "reply_post_id",
                           dependent: :destroy
   has_many :senders, through: :reply_messages
   #delegate :gender, :to => :user, :allow_nil => true
-  default_scope -> { order(created_at: :desc) }
+  scope :asc_order, -> { order(created_at: :asc) }
+  scope :desc_order, -> { order(created_at: :desc) }
+  scope :unpublished, -> { where(published: false) }
+  scope :published, -> { where(published: true) }
   VALID_CITY_REGEX = /\A[a-zA-Z\u0080-\u024F\s\/\-\)\(\`\.\"\']+\z/
   VALID_POSTAL_REGEX = /\A+[0-9]+\z/
   validates :user_id, presence: true
@@ -21,6 +45,8 @@ class Post < ActiveRecord::Base
                  :on_or_after_message => "Meeting Date can not be older than 5 years ago"
   validates :description, presence: true, length: { minimum: 20, maximum: 360}
   validates :gender, presence: true 
+  validates :slug, presence: true
+  
   settings index: {
     number_of_shards: 1,
     analysis: {
@@ -127,11 +153,13 @@ class Post < ActiveRecord::Base
   )
   end
 
-  
+ 
+ 
+
 end
 
 Post.__elasticsearch__.create_index! force: true
-Post.import
+Post.import scope: 'published'
 
 # Post.mappings.to_hash
 

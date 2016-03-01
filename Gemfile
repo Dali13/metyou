@@ -11,7 +11,10 @@ gem 'coffee-rails', '~> 4.1.0'
 gem 'jquery-rails'
 gem 'turbolinks'
 gem 'jbuilder', '~> 2.0'
+gem 'pundit'
 gem 'devise'
+gem 'devise_uid'
+gem 'friendly_id', '~> 5.1.0'
 gem "recaptcha", require: "recaptcha/rails"
 gem 'validates_timeliness', '~> 4.0'
 gem 'will_paginate', '~> 3.0.6'
@@ -23,12 +26,17 @@ gem 'mini_magick',             '3.8.0'
 gem 'fog',                     '1.36.0'
 gem 'elasticsearch-model'
 gem 'elasticsearch-rails'
+gem 'redis-rails'
+gem 'sidekiq'
+gem 'devise-async'
+gem 'sinatra', :require => nil
 gem 'sdoc', '~> 0.4.0', group: :doc
 
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'byebug'
+    gem 'byebug'
+
 end
 
 group :development do
@@ -37,6 +45,9 @@ group :development do
 
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
+  
+  #Chrome Debugger Plugin
+  gem 'meta_request'
 end
 
 

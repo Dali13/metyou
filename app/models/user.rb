@@ -8,15 +8,33 @@ class User < ActiveRecord::Base
   #has_many :posts, through: :messages
   # validate :albums_count_within_bounds, on: :update
   accepts_nested_attributes_for :albums
+  # validates :uid, presence: true
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
-  devise :database_authenticatable, :registerable,
+  devise :uid, :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable,
-         :confirmable, :lockable
+         :confirmable, :lockable, :async
          
          
-    # private
+    def owner_of?(post)
+      if (self.id == post.user_id)
+        return true
+      else
+        return false
+      end
+    end
     
+    def to_param
+      self.uid
+    end
+    
+    private
+    
+
+    
+    def find_by_uid(param)
+      self.find_by(uid: param)
+    end
     # def albums_count_within_bounds
     #   return if self.albums.blank?
     #   errors.add(:base, "Too many photos") if self.albums.size > 1

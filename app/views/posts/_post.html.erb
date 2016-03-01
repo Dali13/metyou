@@ -1,7 +1,11 @@
 <%= link_to post_path(post), class: "list-group-item" do %>
   <div class="media col-md-3">
     <figure>
-      <img class="media-object img-rounded img-responsive"  id="avatar-post" src="http://placehold.it/350x250" alt="placehold.it/350x250">
+      <% if !post.user.albums.blank? %>
+      <%= image_tag(post.user.albums.first.avatar.thumb.url, class: "media-object img-rounded img-responsive", id: "avatar-post") %>
+      <% else %>
+      <%= image_tag('thumb.png', class: "media-object img-rounded img-responsive",  id: "avatar-post") %>
+      <% end %>
     </figure>
   </div>
   <div class="col-md-7">
@@ -18,6 +22,7 @@
   <div class="col-md-2">
     <i class="glyphicon glyphicon-heart-empty"></i>
     <p><%=l post.meeting_date %></p>
+
   </div>
   <div class="clearfix"></div>
 <% end %>

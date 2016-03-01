@@ -17,15 +17,22 @@
     </div>
 </div>
 
+<% if current_user.admin? || owner(@post) %>
+    <%= link_to("Edit Your Post", edit_post_path(@post), :method => :get) %>
+    <%= button_to("Delete Your Post", post_path(@post), method: :delete, data: { confirm: 'Are you certain you want to delete this?' }) %>
+<% end %>
+
 <% if !@message.blank? %>
-  <%= form_for(@message, url: send_message_post_path(@message.reply_post_id)) do |f| %>
+  <%= form_for(@message, url: send_message_post_path(@post)) do |f| %>
   <div class="form-group">
   <%= f.text_area :content, class: "form-control", placeholder: "write a message" %>
   <%= f.submit "send", class: "btn btn-primary" %>
   <% end %>
   </div>
 <% else %>
-<div><p> Already sent a message!</p></div>
+<% if !owner(@post) %>
+<div><p> Already respond to this post!</p></div>
+<% end %>
 <% end %>
   
 

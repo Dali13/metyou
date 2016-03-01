@@ -18,12 +18,11 @@
       <%= f.text_field :city, class: 'form-control', id: 'city', placeholder: "City" %>
       </div>
       <%= f.label :meeting_date %>
-      <!--<%= f.radio_button :meeting_date, Date.today, checked: true, id: 'new-post-radio-1', class: 'new-post-radio' %>-->
       <div>
-      <button type="button", id="radio-1", class="btn btn-info" >Aujourd'hui</button>
-      <button type="button", id="radio-2", class="btn btn-info", data-toggle="collapse", data-target="#datepicker", aria-expanded="false", aria-controls="collapseExample" >Autre Date</button>
+      <button type="button", id="radio-1", class="btn btn-default" >Aujourd'hui</button>
+      <button type="button", id="radio-2", class="btn btn-default" >Autre Date</button>
       </div>
-      <%= f.text_field :meeting_date, class: "collapse", id: "datepicker" %>
+      <%= f.text_field :meeting_date, class: "form-control", id: "datepicker" %>
       </br>
       <%= f.label :description %>
       <%= f.text_area :description, class: 'form-control' %>
@@ -34,36 +33,32 @@
   </div>
 </div>
 
-<script>
+<%= javascript_tag do -%>
 
+$(document).ready(function(){
+  $('#radio-1').toggleClass('active');
+  $('#datepicker').val("<%= l Date.today %>");
+  $('#datepicker').hide();
+});
+
+$('#radio-2').click(function(){
+$('#datepicker').show();
+$('#radio-1').removeClass('active');
+$('#radio-2').addClass('active');
+});
 
     $( "#datepicker" ).datepicker({
     dateFormat: "dd-mm-yy"
     }).datepicker("setDate", new Date());
 
-// $(document).ready(function(){
-//   $("#radio-1").addClass('active');
-  
-// });
 
-// $('#radio-2').click(function(){
-//   if ($("#radio-1").attr('class') === 'btn btn-info active'){
-//   $("#radio-1").removeClass('active');
-//     }
-// });
 
 $('#radio-1').click(function(){
-$('.collapse').val("<%= l Date.today %>")
+$('#datepicker').val("<%= l Date.today %>");
+$('#radio-2').removeClass('active');
+$('#radio-1').addClass('active');
 });
 
-// $(document).on('click', '#new-date-id', function(){
-//   // if (('input[name=meeting_date]:checked').val()===true) {
-//   //   $("#new-date-id").show();
-//   // } else {
-//     $("#new-date-id").hide();
-//   // }
-  
-// });
 
 
 $(function ()
@@ -141,7 +136,7 @@ $(function ()
 }
 		},
 		minLength: 3,
-		delay: 600
+		delay: 400
 	});
 });
-</script>
+<% end -%>
