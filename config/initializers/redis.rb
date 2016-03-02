@@ -1,4 +1,10 @@
-$redis = Redis.new
+    if env.production?
+        if ENV["REDISCLOUD_URL"]
+        $redis = Redis.new(:url => ENV["REDISCLOUD_URL"])
+        end
+    else
+        $redis = Redis.new
+    end
 
     DATA = JSON.parse(File.read("#{Rails.root}/public/postal_code_fr.json"))
 
