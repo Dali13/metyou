@@ -1,0 +1,26 @@
+<div class="container">
+  <div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-8">
+      <div class="item">
+        <%= image_tag(@album.avatar.url, class: "img-rounded img-responsive center-block") %>
+      </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-4">
+      <h4> <%= @user.username if @user.username %></h4>
+      <small id="city-user-profile"><cite>San Francisco, USA <i class="glyphicon glyphicon-map-marker show-user-glyphicon">
+            </i></cite></small>
+            <p>
+            <i class="glyphicon glyphicon-envelope show-user-glyphicon"></i><%= @user.email if @user.email %>
+            <br />
+            <i class="glyphicon glyphicon-phone show-user-glyphicon"></i>06.XX.XX.XX.XX
+            <br />
+            <i class="glyphicon glyphicon-gift show-user-glyphicon"></i><%= @user.date_of_birth if @user.date_of_birth %> - <%= @user.gender %>
+            <br />
+            <i class="glyphicon glyphicon-pencil show-user-glyphicon"></i><%= @user.description if @user.description %>
+            </p>
+            <% if current_user %>
+            <%= link_to "Edit your profile", edit_user_path(current_user), class: "btn btn-success" %>
+            <% end %>
+    </div>
+  </div>
+</div>

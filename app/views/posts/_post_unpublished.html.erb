@@ -1,0 +1,36 @@
+<div class="list-group-item">
+  <div class="media col-md-3">
+    
+    <figure>
+      <% if !post.user.albums.blank? %>
+      <%= image_tag(post.user.albums.first.avatar.thumb.url, class: "media-object img-rounded img-responsive", id: "avatar-post") %>
+      <% else %>
+      <%= image_tag('thumb.png', class: "media-object img-rounded img-responsive",  id: "avatar-post") %>
+      <% end %>
+    </figure>
+    
+  </div>
+  <div class="col-md-7">
+    <h4 class="list-group-item-heading"><%= link_to post.title, post_path(post) %></h4>
+    <p class="list-group-item-text">
+      <small id="city-user-profile">
+        <cite><%= post.city %> - <%= post.postal_code %>
+        <i class="glyphicon glyphicon-map-marker show-user-glyphicon"></i>
+        </cite>
+      </small>
+      <%=h truncate(post.description, length: 40) %>
+    </p>
+    
+  </div>
+
+
+  <div class="col-md-2">
+    <i class="glyphicon glyphicon-heart-empty"></i>
+    <p><%=l post.meeting_date %></p>
+    <% if current_user.admin? && !post.published? %>
+    <%= button_to("Publish", publish_post_path(post), :params => {:published => "protect"}, :method => :patch) %>
+    <% end %>
+  </div>
+
+  <div class="clearfix"></div>
+</div>

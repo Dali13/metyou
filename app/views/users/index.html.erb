@@ -1,0 +1,21 @@
+<div class="container">
+  <div class="row">
+		<div class="well">
+		  <h1 class="text-center">Users</h1>
+		    <div class="btn-group" role="group" aria-label="Default Button Groups">
+  	    <%= link_to "All posts", posts_path, class: "btn btn-default" %>
+  	    <%= link_to "Waiting (#{@unpublished_posts})", unpublished_posts_path, class: "btn btn-default" %>
+  	    <%= link_to "Users", users_path, class: "btn btn-default-active" %>
+  	    <%= link_to "Signaled Posts()", "#", class: "btn btn-default" %>
+  	    <%= link_to "Signaled Users()", "#", class: "btn btn-default" %>
+        </div>
+      <% if !@users.blank? %>
+      <%= will_paginate %>
+      <div class="list-group">
+        <%= render @users %>
+      </div>
+      <%= will_paginate %>
+      <% end %>
+    </div>
+  </div>
+</div>

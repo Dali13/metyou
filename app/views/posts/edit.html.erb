@@ -1,0 +1,119 @@
+<%= render 'posts/error_messages' %>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Our eyes met</h3>
+  </div>
+  <div class="panel-body">
+    <%= form_for(@post, :html => {class: 'form-group', id: 'new-post-id'}) do |f| %>
+      
+      
+      <%= f.label :title %>
+      <%= f.text_field :title, class: 'form-control', autofocus: true, placeholder: "Precise the place where you met" %>
+      
+      <div class="form-inline">
+      <%= f.label :postal_code %>
+      <%= f.text_field :postal_code, class: 'form-control', id: 'cp', placeholder: "Postal code", style: "margin-right: 30px" %>
+      <%= f.label :city %>
+      <%= f.text_field :city, class: 'form-control', id: 'city', placeholder: "City" %>
+      </div>
+      <%= f.label :meeting_date %>
+      
+      <%= f.text_field :meeting_date,  id: "datepicker" %>
+      </br>
+      <%= f.label :description %>
+      <%= f.text_area :description, class: 'form-control' %>
+      
+      <%= f.submit "Submit your Post", class: "btn btn-primary" %>
+    <% end %>
+
+  </div>
+</div>
+
+<script>
+
+
+    $( "#datepicker" ).datepicker({
+    dateFormat: "dd-mm-yy"
+    }).datepicker("setDate", new Date());
+
+
+
+$(function ()
+{
+  var cache = {};
+	$("#cp, #city").autocomplete({
+		source: function (request, response)
+		 {
+		   var term = request.term;
+  		   if (term in cache)
+  			{
+  				response($.map(cache[ term ], function (item)
+  				{
+  
+  					return {
+  						label: item.CodePostal + ", " + item.Ville,
+  						value: function ()
+  						{
+  							if ($(this).attr('id') == 'cp')
+  							{
+  								$('#city').val(item.Ville);
+  								return item.CodePostal;
+  							}
+  							else
+  							{
+  								$('#cp').val(item.CodePostal);
+  								return item.Ville;
+  							}
+  						}
+  					}
+  				}));
+  			}
+  			else
+  			{
+  			var objData = {};
+        if ($(this.element).attr('id') == 'cp')
+        {
+        	objData = { codePostal: request.term, pays: 'FR', maxRows: 10 };
+        }
+        else
+          {
+          	objData = { ville: request.term, pays: 'FR', maxRows: 10 };
+          }
+          $.ajax({
+          url: '/posts/autocomplete.json',
+          dataType: "json",
+          data: objData,
+          type: 'POST',
+          success: function (data)
+          {
+            cache[term] = data ;
+          	response($.map(data, function (item)
+          	{
+          
+          		return {
+          			label: item.CodePostal + ", " + item.Ville,
+          			value: function ()
+          			{
+          				if ($(this).attr('id') === 'cp')
+          				{
+          					$('#city').val(item.Ville);
+          					return item.CodePostal;
+          				}
+          				else
+          				{
+          					$('#cp').val(item.CodePostal);
+          					return item.Ville;
+          				}
+          			}
+          		}
+          	}));
+      }
+});
+
+}
+		},
+		minLength: 3,
+		delay: 400
+	});
+});
+</script>

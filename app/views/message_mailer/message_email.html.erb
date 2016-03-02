@@ -1,0 +1,10 @@
+<p>Hi <%= @receiver.username unless @receiver.username.blank? %>,</p></br>
+<p>You have received a message from <%= link_to 'This user', user_url(@sender) %></p></br>
+<p> if you can not access the link try to copy and paste this url: <%= user_url(@sender) %></p></br>
+<p>You can either reply to this email or send a new message to the adress below :</p></br>
+<p><%= @sender.email %></p>
+
+Regards,
+
+Momo from the metyou.com Team
+
