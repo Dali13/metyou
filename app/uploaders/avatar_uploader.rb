@@ -8,9 +8,9 @@ class AvatarUploader < CarrierWave::Uploader::Base
 
   # Choose what kind of storage to use for this uploader:
   if Rails.env.production?
-    storage :fog
+     storage :fog
   else
-    storage :file
+  storage :file
   end
 
   # Override the directory where uploaded files will be stored.
@@ -35,9 +35,11 @@ class AvatarUploader < CarrierWave::Uploader::Base
   # end
   
   process :resize_to_limit => [800, 800]
+  process :quality => 75
   # Create different versions of your uploaded files:
     version :thumb do
       process :resize_to_fit => [200, 200]
+      process :quality => 75
     end
 
   # Add a white list of extensions which are allowed to be uploaded.

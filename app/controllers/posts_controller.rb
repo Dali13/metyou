@@ -164,6 +164,7 @@ before_action :admin_user, only: [:unpublished, :publish]
     @message.reply_post_id = @post.id
       if @message.save
         MessageMailer.delay.message_email(@message.id)
+        current_user.follow(@post.user) unless current_user.following?(@post.user)
         flash[:success] = "Message Sent"
         redirect_to post_path(@message.reply_post)
       else

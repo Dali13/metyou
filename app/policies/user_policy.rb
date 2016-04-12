@@ -9,6 +9,10 @@ class UserPolicy
   def index?
     @current_user.admin?
   end
+  
+  def show?
+    @current_user.admin? or @current_user == @user or @user.following?(@current_user)
+  end
 
   def edit?
     @current_user.admin? or @current_user == @user

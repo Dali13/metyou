@@ -5,6 +5,11 @@ class User < ActiveRecord::Base
                           foreign_key: "sender_id",
                           dependent: :destroy
   has_many :reply_posts, through: :sent_messages
+  has_many :active_relationships, class_name:  "Relationship",
+                                  foreign_key: "follower_id",
+                                  dependent:   :destroy
+  has_many :following, through: :active_relationships, source: :followed
+
   #has_many :posts, through: :messages
   # validate :albums_count_within_bounds, on: :update
   accepts_nested_attributes_for :albums
@@ -26,6 +31,18 @@ class User < ActiveRecord::Base
     
     def to_param
       self.uid
+    end
+    
+    def follow(other_user)
+      active_relationships.create(followed_id: other_user.id)
+    end
+    
+    def following?(other_user)
+      following.include?(other_user)
+    end
+    
+    def self.logins_before_captcha
+    3
     end
     
     private

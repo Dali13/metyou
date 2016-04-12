@@ -24,7 +24,7 @@ class PostPolicy < ApplicationPolicy
   end
   
   def send_message?
-    (user.gender != post.gender) && (!user.owner_of?(post))
+    user.admin? or ((user.gender != post.gender) && (!user.owner_of?(post)))
   end
   
   def edit?

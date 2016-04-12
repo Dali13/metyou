@@ -5,6 +5,7 @@ class UsersController < ApplicationController
 
 def show
   if @user = User.find_by_uid(params[:id])
+    authorize @user
     @album = Album.find_by(user_id: @user.id)
   else
     redirect_to root_url

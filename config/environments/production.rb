@@ -79,6 +79,8 @@ Rails.application.configure do
   
   Elasticsearch::Model.client = Elasticsearch::Client.new host: ENV['SEARCHBOX_URL']
   
+  config.action_mailer.default_url_options = { :host => 'cryptic-inlet-65921.herokuapp.com' }
+  
   ActionMailer::Base.smtp_settings = {
   :address        => 'smtp.sendgrid.net',
   :port           => '587',
