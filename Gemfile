@@ -31,6 +31,7 @@ gem 'sidekiq'
 gem 'devise-async'
 gem 'sinatra', :require => nil
 gem 'newrelic_rpm'
+gem "rack-timeout"
 gem 'sdoc', '~> 0.4.0', group: :doc
 
 
@@ -55,5 +56,6 @@ end
 group :production do
   gem 'pg',             '0.17.1'
   gem 'rails_12factor', '0.0.2'
+  gem 'puma'
 end
 

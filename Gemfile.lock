@@ -151,6 +151,7 @@ GEM
       mini_portile (~> 0.6.0)
     orm_adapter (0.5.0)
     pg (0.17.1)
+    puma (3.4.0)
     pundit (1.1.0)
       activesupport (>= 3.0.0)
     rack (1.6.4)
@@ -161,6 +162,7 @@ GEM
       rack
     rack-test (0.6.3)
       rack (>= 1.0)
+    rack-timeout (0.4.2)
     rails (4.2.4)
       actionmailer (= 4.2.4)
       actionpack (= 4.2.4)
@@ -287,7 +289,9 @@ DEPENDENCIES
   mini_magick (= 3.8.0)
   newrelic_rpm
   pg (= 0.17.1)
+  puma
   pundit
+  rack-timeout
   rails (= 4.2.4)
   rails_12factor (= 0.0.2)
   recaptcha
