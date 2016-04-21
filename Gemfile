@@ -30,6 +30,7 @@ gem 'redis-rails'
 gem 'sidekiq'
 gem 'devise-async'
 gem 'sinatra', :require => nil
+gem 'newrelic_rpm'
 gem 'sdoc', '~> 0.4.0', group: :doc
 
 
