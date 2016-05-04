@@ -3,8 +3,7 @@
     <h3 class="panel-title">Our eyes met</h3>
   </div>
   <div class="panel-body">
-    <%= form_for(@user, :html => { :html => { :multipart => true }, class: 'form-group'}) do |f| %>
-      
+    <%= form_for(@user, :html => { :html => { :multipart => true }, class: 'directUpload form-group', data: { 'form-data' => (@s3_direct_post.fields), 'url' => @s3_direct_post.url, 'host' => URI.parse(@s3_direct_post.url).host }}) do |f| %>
       
       <%= f.label :username %>
       <%= f.text_field :username, class: 'form-control', autofocus: true, placeholder: "Precise your username" %>
@@ -15,56 +14,140 @@
       <%= f.label :description %>
       <%= f.text_area :description, class: 'form-control' %>
       
+      
+      
   <%= f.fields_for(@album) do |p| %>
      <div class="field">
        <%= p.label :avatar %><br>
-       <% if @avatar.blank? %>
-       <%= p.file_field :avatar, name: "albums[avatar]", id: "file-field", accept: 'image/png,image/gif,image/jpeg', disabled: false %>
+       <% if @album_existant.blank? %>
+         <%= p.file_field :original_avatar_url, name: "albums[original_avatar_url]", id: "file-field", accept: 'image/png,image/gif,image/jpeg', disabled: false %>
        <% else %>
-       <%= p.file_field :avatar, name: "albums[avatar]", id: "file-field", accept: 'image/png,image/gif,image/jpeg', disabled: true %>
+          <%= p.file_field :original_avatar_url, name: "albums[original_avatar_url]", id: "file-field", accept: 'image/png,image/gif,image/jpeg', disabled: true %>
        <% end %>
      </div>
-   <% end %>
+  <% end %>
    
-   <div class="row">
-     <div class="col-xs-6 col-md-3">
-      <% if !@avatar.blank? %>
-       <%= image_tag(@avatar.thumb.url, class: "thumbnail image-preview", size: "200x200") %>
-      <% else %>
-       <%= image_tag("default-profile.png", class: "thumbnail image-preview", size: "200x200") %>
-      <% end %>
-     </div>
-     <div class="col-xs-6 col-md-9">
-       <% if !@avatar.blank? %>
-       <%= link_to "Delete avatar", avatar_user_path(@user), class: "delete-button", remote: true, method: :delete %>
-       <% end %>
-     </div>
-   </div>
+
    
    
       
       <%= f.submit "Save your profile", class: "btn btn-primary" %>
     <% end %>
     
-
+   <div class="row">
+     <div class="col-xs-6 col-md-3">
+      <% if !@album_existant.blank? %>
+        <% if @album_existant.image_processing == true %>
+          <%= image_tag("http://placehold.it/770x400&text=processing", class: "cover image-preview") %>
+        <% else %>
+          <%= image_tag(@album_existant.avatar.thumb.url, class: "cover image-preview") %>
+        <% end %>
+      <% else %>
+       <%= image_tag("default-profile.png", class: "cover image-preview") %>
+      <% end %>
+     </div>
+     <div class="col-xs-6 col-md-9">
+       <% if !@album_existant.blank? && @album_existant.image_processing == nil %>
+       <%= link_to "Delete avatar", avatar_user_path(@user), class: "delete-button", remote: true, method: :delete %>
+       <% end %>
+     </div>
+   </div>
   </div>
 </div>
 
 <script>
 
-$("#file-field").bind("change", function(){
-  if (this.files && this.files[0]){
-  var size_in_megabytes = this.files[0].size/1024/1024;
-  if (size_in_megabytes > 5) {
-    alert('Maximum file size is 5MB. Please choose a smaller file.');
-  }
-  }
-  
+$(function() {
+  "use strict";
+  $('.directUpload').find("input:file").each(function(i, elem) {
+    var fileInput    = $(elem);
+    var form         = $(fileInput.parents('form:first'));
+    var submitButton = form.find('input[type="submit"]');
+    var progressBar  = $("<div class='bar'></div>");
+    var barContainer = $("<div class='progress'></div>").append(progressBar);
+    fileInput.after(barContainer);
+    fileInput.fileupload({
+      add: function (e, data) {
+        var uploadErrors = [];
+
+        var acceptFileTypes = /(\.|\/)(gif|jpe?g|png)$/i;
+        if(data.originalFiles[0]['type'].length && !acceptFileTypes.test(data.originalFiles[0]['type'])) {
+            uploadErrors.push('File Type not accepted');
+        }
+
+        console.log(data.originalFiles[0]['size']) ;
+        if (data.originalFiles[0]['size'] > 5 * 1024 * 1024) {
+            uploadErrors.push('File is too large');
+        }
+        if(uploadErrors.length > 0) {
+            alert(uploadErrors.join("\n"));
+        } else {
+            data.submit();
+        }
+
+    },
+      fileInput:       fileInput,
+      url:             form.data('url'),
+      type:            'POST',
+      autoUpload:       true,
+      // acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+      // maxFileSize: 1000,
+      formData:         form.data('form-data'),
+      paramName:        'file', // S3 does not like nested name fields i.e. name="user[avatar_url]"
+      dataType:         'XML',  // S3 returns XML if success_action_status is set to 201
+      replaceFileInput: false,
+      progressall: function (e, data) {
+        var progress = parseInt(data.loaded / data.total * 100, 10);
+        progressBar.css('width', progress + '%')
+      },
+      start: function (e) {
+        submitButton.prop('disabled', true);
+
+        progressBar.
+          css('background', 'green').
+          css('display', 'block').
+          css('width', '0%').
+          text("Loading...");
+      },
+      done: function(e, data) {
+        submitButton.prop('disabled', false);
+        $('#file-field').prop('disabled', true);
+        progressBar.text("Uploading done");
+
+        // extract key and generate URL from response
+        var key   = $(data.jqXHR.responseXML).find("Key").text();
+        var url   = '//' + form.data('host') + '/' + key;
+
+        // create hidden field
+        var input = $("<input />", { type:'hidden', name: fileInput.attr('name'), value: url });
+        // form.append(input);
+        input.insertBefore(".btn");
+      },
+      fail: function(e, data) {
+        submitButton.prop('disabled', false);
+
+        progressBar.
+          css("background", "red").
+          text("Failed");
+      }
+    });
+  });
 });
+
+// $("#file-field").bind("change", function(){
+//   if (this.files && this.files[0]){
+//   var size_in_megabytes = this.files[0].size/1024/1024;
+//   if (size_in_megabytes > 1) {
+//     alert('Maximum file size is 5MB. Please choose a smaller file.');
+//   }
+//   }
+  
+// });
 
 
 $("#file-field").change(function(){
-    if (this.files && this.files[0] && this.files[0].size/1024/1024 < 5) {
+    var acceptedFileTypes = /(\.|\/)(gif|jpe?g|png)$/i;
+    if (this.files && this.files[0] && this.files[0].size/1024/1024 < 5 && acceptedFileTypes.exec(this.files[0]['type'])) {
       var reader = new FileReader();
       reader.onload = function (e) {
         $('.image-preview').attr('src', e.target.result);
@@ -72,5 +155,6 @@ $("#file-field").change(function(){
       reader.readAsDataURL(this.files[0]);
     }
 });
+
 
 </script>

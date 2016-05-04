@@ -2,7 +2,11 @@
   <div class="row">
     <div class="col-xs-12 col-sm-12 col-md-8">
       <div class="item">
-        <%= image_tag(@album.avatar.url, class: "img-rounded img-responsive center-block") %>
+        <% if @album.image_processing == true %>
+          <%= image_tag("http://placehold.it/770x400&text=processing", class: "img-rounded img-responsive center-block") %>
+        <% else %>
+          <%= image_tag(@album.avatar.url, class: "img-rounded img-responsive center-block") %>
+        <% end %>
       </div>
     </div>
     <div class="col-xs-12 col-sm-12 col-md-4">

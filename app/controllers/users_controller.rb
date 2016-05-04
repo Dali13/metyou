@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!
+   before_action :set_s3_direct_post, only: [:edit]
   #before_action :admin_user, only: [:index]
   #before_action :correct_user, only: [:show, :edit, :update]
 
@@ -16,13 +17,14 @@ def edit
   if @user = User.find_by_uid(params[:id])
     authorize @user
     @album = @user.albums.build
-    if @user.albums.count > 0
-    @avatar = Album.find_by(user_id: @user.id).avatar
+    if @user.albums.count > 0 
+      @album_existant = @user.albums.first
+      # @avatar = Album.find_by(user_id: @user.id).avatar
     else
-    @avatr = nil
+      @album_existant = nil
     end
   else
-    redirect_to root_url    
+   redirect_to root_url    
   end
 end
 
@@ -38,7 +40,7 @@ def update
       redirect_to edit_user_path(@user)
     end
   else
-    if (@user.update_attributes(edit_user_params) && @user.albums.create(:avatar => params[:albums]['avatar'], :user_id => @user.id))
+    if (@user.update_attributes(edit_user_params) && @user.albums.create(:original_avatar_url => params[:albums]['original_avatar_url'], :user_id => @user.id))
         flash[:success] = 'Your profile and avatar was updated'
         redirect_to user_path(@user)
     else
@@ -51,7 +53,10 @@ end
 def avatar
   @user = User.find_by_uid(params[:id])
   authorize @user
-  Album.find_by(user_id: @user.id).destroy
+  album = Album.find_by(user_id: @user.id)
+  key = album.original_avatar_url.split('amazonaws.com/')[1]
+  S3_BUCKET.object(key).delete
+  album.destroy
   respond_to do |format|
     format.js
   end
@@ -115,11 +120,16 @@ end
 
     private
       def edit_user_params
-        params.require(:user).permit(:username, :date_of_birth, :description, albums_attributes: [:id, :user_id, :avatar])
+        params.require(:user).permit(:username, :date_of_birth, :description, albums_attributes: [:id, :user_id, :original_avatar_url])
       end
       
       def user_params
         params.require(:user).permit(:current_password, :password, :password_confirmation)
+      end
+      
+      def set_s3_direct_post
+        @s3_direct_post = S3_BUCKET.presigned_post(key: "uploads/#{SecureRandom.uuid}/${filename}", success_action_status: '201', acl: 'public-read', content_length_range: 0..5242880 )
+        @s3_direct_post.content_type('image/*')
       end
       
       # def deleted_params

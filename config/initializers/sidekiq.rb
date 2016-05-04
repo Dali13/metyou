@@ -1,4 +1,6 @@
-require 'sidekiq_calculations'
+if Rails.env.production?
+  
+  require 'sidekiq_calculations'
 
 Sidekiq.configure_client do |config|
   sidekiq_calculations = SidekiqCalculations.new
@@ -18,4 +20,6 @@ Sidekiq.configure_server do |config|
   config.redis = {
     url: ENV['REDISCLOUD_URL']
   }
+end
+
 end

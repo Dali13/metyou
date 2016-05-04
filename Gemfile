@@ -23,7 +23,9 @@ gem 'jquery-ui-rails'
 gem 'jquery-turbolinks'
 gem 'carrierwave'
 gem 'mini_magick',             '3.8.0'
-gem 'fog-aws'
+gem 'aws-sdk', '~> 2'
+gem 'carrierwave-aws'
+#gem 'fog-aws'
 gem 'elasticsearch-model'
 gem 'elasticsearch-rails'
 gem 'redis-rails'
@@ -31,7 +33,7 @@ gem 'sidekiq'
 gem 'devise-async'
 gem 'sinatra', :require => nil
 gem 'newrelic_rpm'
-gem "rack-timeout"
+gem 'rack-timeout'
 gem 'sdoc', '~> 0.4.0', group: :doc
 
 

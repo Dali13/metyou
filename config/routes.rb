@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
-  devise_for :users, controllers: {registrations: 'registrations', sessions: 'sessions'}
+  devise_for :users, controllers: {registrations: 'registrations', sessions: 'sessions', unlocks: 'unlocks'}
   authenticated :user do
     root 'posts#index', as: :authenticated_root
   end
