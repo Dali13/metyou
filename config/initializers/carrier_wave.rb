@@ -8,4 +8,6 @@
     secret_access_key: ENV.fetch('AWS_SECRET_ACCESS_KEY'),
     region:            ENV.fetch('AWS_REGION') # Required
   }
+  
+  config.cache_dir     = "#{Rails.root}/tmp/uploads"   # For Heroku
   end
