@@ -1,0 +1,7 @@
+  <%= form_for(@report, url: post_report_user_path(@user)) do |f| %>
+  <div class="form-group">
+  <%= f.text_area :report_message, class: "form-control", placeholder: "write a message" %>
+  <%= f.invisible_captcha :verification %>
+  <%= f.submit "Submit", class: "btn btn-primary" %>
+  <% end %>
+  </div>

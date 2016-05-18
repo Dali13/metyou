@@ -1,0 +1,40 @@
+<% if @album.blank? %>
+  <%= render 'user_partial/show_0' %>
+<% else %>
+  <%= render 'user_partial/show_1' %>
+<% end %>
+
+<div>
+<% if current_user.admin? %>
+  <% if !@user.blocked? %>
+    <%= button_to("Block This User", block_user_path(@user), method: :post, data: { confirm: 'Are you certain you want to block this?' }) %>
+  <% else %>
+    <%= button_to("Unlock This User", unblock_user_path(@user), method: :post, data: { confirm: 'Are you certain you want to unblock this?' }) %>  
+  <% end %>
+  <% if @user.reported? %>
+    <%= button_to("Unreport This User", unreport_user_path(@user), method: :post, data: { confirm: 'Are you certain you want to unreport this?' }) %>
+  <% end %>
+    <%= button_to("Delete This User", user_path(@user), method: :delete, data: { confirm: 'Are you certain you want to delete this?' }) %>
+    <%= link_to("All the posts of the user: (#{@user.posts.size})", myposts_user_path(@user), :method => :get) %>
+<% end %>
+</div>
+
+<% if !@reported_messages.blank? %>
+<div> Reported messages: <%= @reported_messages.size %></div>
+<div>
+  <% @reported_messages.each do |report| %>
+    <%= report.report_message %>
+    <%= report.created_at %>
+  <% end %>
+</div>
+<% end %>
+
+<% if !@sent_messages.blank? %>
+<div> Sent Messsages</div>
+<div>
+  <% @sent_messages.each do |msg| %>
+    <%= msg.content %>
+    <%= msg.created_at %>
+  <% end %>
+</div>
+<% end %>

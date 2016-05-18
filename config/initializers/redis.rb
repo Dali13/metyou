@@ -3,33 +3,33 @@
         $redis = Redis.new(:url => ENV["REDISCLOUD_URL"])
         end
     else
-        $redis = Redis.new
+        $redis = Redis.new(db: 0)
     end
 
-    DATA = JSON.parse(File.read("#{Rails.root}/public/03V16_third.json"))
+   # data = JSON.parse(File.read("#{Rails.root}/public/03V16_third.json"))
 
-    DATA["cp_autocomplete"].each.with_index(1) do |f, index|
-      $redis.hset 'postal-data', index.to_s, f.to_json
-    end
+    # (JSON.parse(File.read("#{Rails.root}/public/03V16_third.json")))["cp_autocomplete"].each.with_index(1) do |f, index|
+    #   $redis.hset 'postal-data', index.to_s, f.to_json
+    # end
 
-    DATA["cp_autocomplete"].each.with_index(1) do |f, index|
-      (2..4).each do |n|
-        prefix = (f['CP'][0..n]).to_s
-        $redis.zadd("postal:#{prefix}", [0, index.to_s])
-      end
-    end
+    # (JSON.parse(File.read("#{Rails.root}/public/03V16_third.json")))["cp_autocomplete"].each.with_index(1) do |f, index|
+    #   (2..4).each do |n|
+    #     prefix = (f['CP'][0..n]).to_s
+    #     $redis.zadd("postal:#{prefix}", [0, index.to_s])
+    #   end
+    # end
 
-    DATA["cp_autocomplete"].each do |f|
-      f["CITY_PAR"] = f['VILLE'].parameterize
-    end
+    # # (JSON.parse(File.read("#{Rails.root}/public/03V16_third.json")))["cp_autocomplete"].each do |f|
+    # #   f["CITY_PAR"] = f['VILLE'].parameterize
+    # # end
 
-    DATA["cp_autocomplete"].each.with_index(1) do |f, index|
-      (2..((f["CITY_PAR"].length)-1)).each do |n|
-        prefix = (f['CITY_PAR'][0..n]).to_s.downcase
-        $redis.zadd("city:#{prefix}", [0, index.to_s])
-      end
-    end
- DATA = nil
+    # (JSON.parse(File.read("#{Rails.root}/public/03V16_third.json")))["cp_autocomplete"].each.with_index(1) do |f, index|
+    #   (2..(((f['VILLE'].parameterize).length)-1)).each do |n|
+    #     prefix = ((f['VILLE'].parameterize)[0..n]).to_s.downcase
+    #     $redis.zadd("city:#{prefix}", [0, index.to_s])
+    #   end
+    # end
+
 
 
 

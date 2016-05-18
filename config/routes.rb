@@ -13,10 +13,15 @@ Rails.application.routes.draw do
        post '/autocomplete', to: 'posts#autocomplete'
        get '/search' => 'posts#search'
        get '/unpublished' => 'posts#unpublished'
+       get '/flaged' => 'posts#flaged'
      end
      member do
        post 'send_message', to: 'posts#send_message'
        patch 'publish', to: 'posts#publish'
+       get 'flag', to: 'posts#flag'
+       post 'unflag', to: 'posts#unflag'
+       post 'post_flag', to: 'posts#post_flag'
+       get 'reporting', to: 'posts#reporting'
      end
      
    end
@@ -26,13 +31,25 @@ Rails.application.routes.draw do
      member do
        get 'myposts', to: 'users#myposts'
        delete 'avatar', to: 'users#avatar'
+       delete 'image', to: 'users#image'
+       get 'report', to: 'users#report'
+       post 'unreport', to: 'users#unreport'
+       post 'post_report', to: 'users#post_report'
+       post 'block', to: 'users#block'
+       post 'unblock', to: 'users#unblock'
+       get 'reporting', to: 'users#reporting'
      end
      collection do
        get 'settings', to: 'users#settings'
        patch 'update_password', to: 'users#update_password'
+       get 'blocked', to: 'users#blocked'
+       get 'reported', to: 'users#reported'
+       get 'searching_form', to: 'users#searching_form'
+       get 'search', to: 'users#search'
      end
    end
   require 'sidekiq/web' 
+  require 'sidekiq/cron/web'
   authenticate :user, lambda { |u| u.admin? } do
     mount Sidekiq::Web => '/sidekiq'
   end

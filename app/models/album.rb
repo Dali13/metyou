@@ -10,11 +10,13 @@ class Album < ActiveRecord::Base
     #   :allow_blank => true
     # }
   #validate :avatars_count_within_bounds, :on => :create
-  # validates_uniqueness_of :user_id
+  validates_uniqueness_of :user_id
   # validate :avatar_size
   # validates_associated :user
-  before_save :check_url
-  after_save :process_async
+  before_create :check_url
+  after_commit :process_async, :on => :create 
+  before_destroy :delete_original_avatar
+  
   
       private
       
@@ -24,6 +26,13 @@ class Album < ActiveRecord::Base
       
       def process_async
         ProcessImageWorker.perform_async(self.id, original_avatar_url) if original_avatar_url && image_processing
+      end
+      
+      def delete_original_avatar
+        if !self.original_avatar_url.blank?
+          key = self.original_avatar_url.split('amazonaws.com/')[1]
+          S3_BUCKET.object(key).delete
+        end
       end
   
       # private

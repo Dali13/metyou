@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  reported_id: 1
+  reporter_id: 1
+  report_message: MyText
+
+two:
+  reported_id: 1
+  reporter_id: 1
+  report_message: MyText

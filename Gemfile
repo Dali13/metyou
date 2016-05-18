@@ -30,10 +30,12 @@ gem 'elasticsearch-model'
 gem 'elasticsearch-rails'
 gem 'redis-rails'
 gem 'sidekiq'
+gem "sidekiq-cron", "~> 0.4.0"
 gem 'devise-async'
 gem 'sinatra', :require => nil
 gem 'newrelic_rpm'
 gem 'rack-timeout'
+gem 'invisible_captcha'
 gem 'sdoc', '~> 0.4.0', group: :doc
 
 

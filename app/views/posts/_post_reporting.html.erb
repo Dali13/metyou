@@ -1,0 +1,28 @@
+<%= link_to reporting_post_path(post), class: "list-group-item" do %>
+  <div class="media col-md-3">
+    <figure>
+      <% if !post.user.albums.blank? %>
+      <%= image_tag(post.user.albums.first.avatar.thumb.url, class: "media-object img-rounded img-responsive", id: "avatar-post") %>
+      <% else %>
+      <%= image_tag('thumb.png', class: "media-object img-rounded img-responsive",  id: "avatar-post") %>
+      <% end %>
+    </figure>
+  </div>
+  <div class="col-md-7">
+    <h4 class="list-group-item-heading"><%= post.title %></h4>
+    <p class="list-group-item-text">
+      <small id="city-user-profile">
+        <cite><%= post.city %> - <%= post.postal_code %>
+        <i class="glyphicon glyphicon-map-marker show-user-glyphicon"></i>
+        </cite>
+      </small>
+      <%=h truncate(post.description, length: 40) %>
+    </p>
+  </div>
+  <div class="col-md-2">
+    <i class="glyphicon glyphicon-heart-empty"></i>
+    <p><%=l post.meeting_date %></p>
+
+  </div>
+  <div class="clearfix"></div>
+<% end %>

@@ -1,0 +1,7 @@
+  <%= form_for(@flag, url: post_flag_post_path(@post)) do |f| %>
+  <div class="form-group">
+  <%= f.text_area :flag_message, class: "form-control", placeholder: "write a message" %>
+  <%= f.invisible_captcha :verification %>
+  <%= f.submit "Submit", class: "btn btn-primary" %>
+  <% end %>
+  </div>

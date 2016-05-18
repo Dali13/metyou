@@ -1,0 +1,5 @@
+schedule_cleaning_job:  
+  cron: "10 4 * * *"
+  class: "CleaningJob"
+  queue: default
+  active_job: true

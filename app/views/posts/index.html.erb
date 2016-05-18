@@ -11,9 +11,25 @@
             <%= form_tag(search_posts_path, method: :get) do %>
             <div class="input-group">
               <%= text_field_tag(:q, params[:q], placeholder: 'Search for', class: 'form-control') %>
+              <%= text_field_tag(:postal, params[:postal], placeholder: 'Code Postal ou ville', id: 'search_location', class: 'form-control') %>
+              <%= text_field_tag(nil, nil, id: 'search_city', class: 'form-control', readonly: 'readonly') %>
+              <div style="margin-bottom: 20px" class="input-group" id="radio-distance">
+                <%= label_tag 'distance', "Distance:", class: "radio-inline", style:"font-weight: bold; margin-left: -15px" %>
+                <%= label_tag 'distance_10', "10 km", class: "radio-inline" %>
+                <%= radio_button_tag 'distance', '10', true, class: "radio-inline", style: "margin-right: 5px" %>
+                <%= label_tag 'distance_50', "50 km", class: "radio-inline" %>
+                <%= radio_button_tag 'distance', '50', false, class: "radio-inline", style: "margin-right: 5px"  %>
+              </div>
+              <%= hidden_field_tag(:maxlat, params[:maxlat], id:'max_lat') %>
+              <%= hidden_field_tag(:minlon, params[:minlon], id:'min_lon') %>
+              <%= hidden_field_tag(:minlat, params[:minlat], id:'min_lat') %>
+              <%= hidden_field_tag(:maxlon, params[:maxlon], id:'max_lon') %>
               <span class="input-group-btn">
                 <%= submit_tag "Search", name: nil, class: "btn btn-default" %>
               </span>
+
+              <%= hidden_field_tag(nil, nil, id:'search_lat') %>
+              <%= hidden_field_tag(nil, nil, id:'search_lon') %>
             </div><!-- /input-group -->
             <% end %>
           </div>
@@ -25,9 +41,11 @@
         <% if current_user.admin? %>
   	    <%= link_to "All posts", posts_path, class: "btn btn-default-active" %>
   	    <%= link_to "Waiting (#{@unpublished_posts})", unpublished_posts_path, class: "btn btn-default" %>
+  	    <%= link_to "Signaled Posts(#{@flaged_posts})", flaged_posts_path, class: "btn btn-default" %>
+  	    <%= link_to "Signaled Users(#{@reported_users})", reported_users_path, class: "btn btn-default" %>
+  	    <%= link_to "Blocked Users", blocked_users_path, class: "btn btn-default" %>
+  	    <%= link_to "Search for a user", searching_form_users_path, class: "btn btn-default" %>
   	    <%= link_to "Users", users_path, class: "btn btn-default" %>
-  	    <%= link_to "Signaled Posts()", "#", class: "btn btn-default" %>
-  	    <%= link_to "Signaled Users()", "#", class: "btn btn-default" %>
         <% end %>
         </div>
         
@@ -41,3 +59,176 @@
     </div>
   </div>
 </div>
+
+<%= javascript_tag do -%>
+
+$(document).ready(function(){
+  $('#search_city').hide();
+  $('#radio-distance').hide();
+});
+
+$(function ()
+{
+  var cache = {};
+	$("#search_location").autocomplete({
+		source: function (request, response)
+		 {
+		   var term = request.term;
+  		   if (term in cache)
+  			{
+  				response($.map(cache[ term ], function (item)
+  				{
+  
+  					return {
+  						label: item.CodePostal + ", " + item.Ville,
+  						value: function ()
+  						{
+  								$('#search_lat').val(item.Lat);
+  								$('#search_lon').val(item.Lon);
+  								$('#search_city').val(item.Ville).trigger('change');
+  								return item.CodePostal;
+  						}
+  					}
+  				}));
+  			}
+  			else
+  			{
+  			var objData = {};
+        if (!isNaN(term))
+        {
+        	objData = { codePostal: request.term, pays: 'FR', maxRows: 10 };
+        }
+        else
+          {
+          	objData = { ville: request.term, pays: 'FR', maxRows: 10 };
+          }
+          $.ajax({
+          url: '/posts/autocomplete.json',
+          dataType: "json",
+          data: objData,
+          type: 'POST',
+          success: function (data)
+          {
+            cache[term] = data ;
+          	response($.map(data, function (item)
+          	{
+          
+          		return {
+          			label: item.CodePostal + ", " + item.Ville,
+          			value: function ()
+          			{
+          			  $('#search_lat').val(item.Lat);
+  								$('#search_lon').val(item.Lon);
+  								$('#search_city').val(item.Ville).trigger('change');
+  								return item.CodePostal;
+          			}
+          		}
+          	}));
+      }
+});
+
+}
+		},
+		minLength: 3,
+		delay: 400
+	});
+});
+
+$('#search_city').on('change',function(){
+$('#search_city').show();
+$('#radio-distance').show();
+$('#distance_10').click();
+});
+
+$('#search_location').keyup(function(){
+if( $(this).val().length === 0 ) {
+  $('#search_city').val('');
+  $('#search_city').hide();
+  $('#radio-distance').hide();
+}
+});
+
+getBoundingBox = function (centerPoint, distance) {
+  var MIN_LAT, MAX_LAT, MIN_LON, MAX_LON, R, radDist, degLat, degLon, radLat, radLon, minLat, maxLat, minLon, maxLon, deltaLon;
+  if (distance < 0) {
+    return 'Illegal arguments';
+  }
+  // helper functions (degrees<–>radians)
+  Number.prototype.degToRad = function () {
+    return this * (Math.PI / 180);
+  };
+  Number.prototype.radToDeg = function () {
+    return (180 * this) / Math.PI;
+  };
+  // coordinate limits
+  MIN_LAT = (-90).degToRad();
+  MAX_LAT = (90).degToRad();
+  MIN_LON = (-180).degToRad();
+  MAX_LON = (180).degToRad();
+  // Earth's radius (km)
+  R = 6378.1;
+  // angular distance in radians on a great circle
+  radDist = distance / R;
+  // center point coordinates (deg)
+  degLat = centerPoint[0];
+  degLon = centerPoint[1];
+  // center point coordinates (rad)
+  radLat = degLat.degToRad();
+  radLon = degLon.degToRad();
+  // minimum and maximum latitudes for given distance
+  minLat = radLat - radDist;
+  maxLat = radLat + radDist;
+  // minimum and maximum longitudes for given distance
+  minLon = void 0;
+  maxLon = void 0;
+  // define deltaLon to help determine min and max longitudes
+  deltaLon = Math.asin(Math.sin(radDist) / Math.cos(radLat));
+  if (minLat > MIN_LAT && maxLat < MAX_LAT) {
+    minLon = radLon - deltaLon;
+    maxLon = radLon + deltaLon;
+    if (minLon < MIN_LON) {
+      minLon = minLon + 2 * Math.PI;
+    }
+    if (maxLon > MAX_LON) {
+      maxLon = maxLon - 2 * Math.PI;
+    }
+  }
+  // a pole is within the given distance
+  else {
+    minLat = Math.max(minLat, MIN_LAT);
+    maxLat = Math.min(maxLat, MAX_LAT);
+    minLon = MIN_LON;
+    maxLon = MAX_LON;
+  }
+  return [
+    minLon.radToDeg(),
+    minLat.radToDeg(),
+    maxLon.radToDeg(),
+    maxLat.radToDeg()
+  ];
+};
+
+$("#distance_10").on('click', function(){
+  var distance = 10;
+  var latPoint = parseFloat($("#search_lat").val());
+  var lonPoint = parseFloat($("#search_lon").val());
+  var PosArray = [latPoint, lonPoint];
+  $('#min_lon').val((getBoundingBox(PosArray, distance)[0]).toFixed(4));
+  $('#min_lat').val((getBoundingBox(PosArray, distance)[1]).toFixed(4));
+  $('#max_lon').val((getBoundingBox(PosArray, distance)[2]).toFixed(4));
+  $('#max_lat').val((getBoundingBox(PosArray, distance)[3]).toFixed(4));
+});
+
+$("#distance_50").on('click', function(){
+  var distance = 50;
+  var latPoint = parseFloat($("#search_lat").val());
+  var lonPoint = parseFloat($("#search_lon").val());
+  var PosArray = [latPoint, lonPoint];
+  $('#min_lon').val((getBoundingBox(PosArray, distance)[0]).toFixed(4));
+  $('#min_lat').val((getBoundingBox(PosArray, distance)[1]).toFixed(4));
+  $('#max_lon').val((getBoundingBox(PosArray, distance)[2]).toFixed(4));
+  $('#max_lat').val((getBoundingBox(PosArray, distance)[3]).toFixed(4));
+});
+
+
+<% end -%>

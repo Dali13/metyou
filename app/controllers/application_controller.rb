@@ -24,16 +24,30 @@ class ApplicationController < ActionController::Base
       end
     end
     
-    def admin_user
-      if !current_user.admin?
-      flash[:danger] = "Not authorized User"
-      redirect_to root_url
-      end
-    end
+    # def admin_user
+    #   if !current_user.admin?
+    #   flash[:danger] = "Not authorized User"
+    #   redirect_to root_url
+    #   end
+    # end
     
-    def get_count
+    def get_unpublished_count
       @unpublished_posts = Post.where(:published => false).size
     end
+    
+    def get_flaged_posts_count
+      @flaged_posts = Post.where(:flaged => true).size
+    end
+    
+    def get_reported_users_count
+      @reported_users = User.where(:reported => true).size
+    end
+    
+    def get_blocked_users_count
+      @blocked_users = User.where(:blocked => true).size
+    end
+    
+    
     # def owner_of?(user, post)
     #   return false unless (user.id == post.user_id)
     # end

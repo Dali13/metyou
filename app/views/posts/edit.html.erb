@@ -23,6 +23,9 @@
       <%= f.label :description %>
       <%= f.text_area :description, class: 'form-control' %>
       
+      <%= f.hidden_field :lat, id: 'lat' %>
+      <%= f.hidden_field :lon, id: 'lon' %>
+      
       <%= f.submit "Submit your Post", class: "btn btn-primary" %>
     <% end %>
 
@@ -57,11 +60,15 @@ $(function ()
   							if ($(this).attr('id') == 'cp')
   							{
   								$('#city').val(item.Ville);
+  								$('#lat').val(item.Lat);
+  								$('#lon').val(item.Lon);
   								return item.CodePostal;
   							}
   							else
   							{
   								$('#cp').val(item.CodePostal);
+  								$('#lat').val(item.Lat);
+  								$('#lon').val(item.Lon);
   								return item.Ville;
   							}
   						}
@@ -97,11 +104,15 @@ $(function ()
           				if ($(this).attr('id') === 'cp')
           				{
           					$('#city').val(item.Ville);
+          					$('#lat').val(item.Lat);
+  								  $('#lon').val(item.Lon);
           					return item.CodePostal;
           				}
           				else
           				{
           					$('#cp').val(item.CodePostal);
+          					$('#lat').val(item.Lat);
+  								  $('#lon').val(item.Lon);
           					return item.Ville;
           				}
           			}

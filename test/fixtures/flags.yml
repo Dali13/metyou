@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  flaged_id: 1
+  flager_id: 1
+  flag_message: MyText
+
+two:
+  flaged_id: 1
+  flager_id: 1
+  flag_message: MyText

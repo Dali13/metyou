@@ -15,7 +15,7 @@
       <%= f.text_area :description, class: 'form-control' %>
       
       
-      
+  
   <%= f.fields_for(@album) do |p| %>
      <div class="field">
        <%= p.label :avatar %><br>
@@ -26,36 +26,95 @@
        <% end %>
      </div>
   <% end %>
-   
-
-   
-   
-      
-      <%= f.submit "Save your profile", class: "btn btn-primary" %>
-    <% end %>
-    
+ 
    <div class="row">
-     <div class="col-xs-6 col-md-3">
+     
       <% if !@album_existant.blank? %>
         <% if @album_existant.image_processing == true %>
-          <%= image_tag("http://placehold.it/770x400&text=processing", class: "cover image-preview") %>
+        <div class="col-xs-6 col-md-3 imgLiquidFill imgLiquid" style="width:250px; height:250px;">
+          <%= image_tag("http://placehold.it/770x400&text=processing", class: "image-preview") %>
+        </div>  
         <% else %>
-          <%= image_tag(@album_existant.avatar.thumb.url, class: "cover image-preview") %>
+
+        <div class="col-xs-6 col-md-3 imgLiquidFill imgLiquid" style="width:250px; height:250px;">
+          <%= image_tag(@album_existant.avatar.thumb.url, class: "image-preview") %>
+        </div>
+
         <% end %>
       <% else %>
-       <%= image_tag("default-profile.png", class: "cover image-preview") %>
+      <div class="col-xs-6 col-md-3 imgLiquidFill imgLiquid" style="width:250px; height:250px;">
+       <%= image_tag("default-profile.png", class: "image-preview") %>
+      </div>
       <% end %>
-     </div>
+     
      <div class="col-xs-6 col-md-9">
        <% if !@album_existant.blank? && @album_existant.image_processing == nil %>
        <%= link_to "Delete avatar", avatar_user_path(@user), class: "delete-button", remote: true, method: :delete %>
        <% end %>
      </div>
    </div>
+   
+     <%= f.fields_for(@photo) do |p| %>
+     <div class="field">
+       <%= p.label :image %><br>
+       <% if @photo_existant.blank? %>
+         <%= p.file_field :original_image_url, name: "photos[original_image_url]", id: "photo-file-field", accept: 'image/png,image/gif,image/jpeg', disabled: false %>
+       <% else %>
+          <%= p.file_field :original_image_url, name: "photos[original_image_url]", id: "photo-file-field", accept: 'image/png,image/gif,image/jpeg', disabled: true %>
+       <% end %>
+     </div>
+  <% end %>
+   
+   <div class="row">
+     
+      <% if !@photo_existant.blank? %>
+        <% if @photo_existant.image_processing == true %>
+        <div class="col-xs-6 col-md-3 imgLiquidFill imgLiquid photo" style="width:250px; height:250px;">
+          <%= image_tag("http://placehold.it/770x400&text=processing", class: "photo-preview") %>
+        </div>  
+        <% else %>
+
+        <div class="col-xs-6 col-md-3 imgLiquidFill imgLiquid photo" style="width:250px; height:250px;">
+          <%= image_tag(@photo_existant.image.thumb.url, class: "photo-preview") %>
+        </div>
+
+        <% end %>
+      <% else %>
+      <div class="col-xs-6 col-md-3 imgLiquidFill imgLiquid photo" style="width:250px; height:250px;">
+       <%= image_tag("default-profile.png", class: "photo-preview") %>
+      </div>
+      <% end %>
+     
+     <div class="col-xs-6 col-md-9">
+       <% if !@photo_existant.blank? && @photo_existant.image_processing == nil %>
+       <%= link_to "Delete Photo", image_user_path(@user), class: "photo-delete-button", remote: true, method: :delete %>
+       <% end %>
+     </div>
+ 
+   </div>
+   
+   
+      
+      <%= f.submit "Save your profile", class: "btn btn-primary" %>
+    <% end %>
+    
+
+        
+
   </div>
 </div>
 
+
+
 <script>
+
+$(document).ready(function() {
+    $(".imgLiquidFill").imgLiquid({
+        fill: false,
+        horizontalAlign: "center",
+        verticalAlign: "50%"
+    });
+});
 
 $(function() {
   "use strict";
@@ -84,7 +143,8 @@ $(function() {
         } else {
             data.submit();
         }
-
+        
+        
     },
       fileInput:       fileInput,
       url:             form.data('url'),
@@ -111,13 +171,13 @@ $(function() {
       },
       done: function(e, data) {
         submitButton.prop('disabled', false);
-        $('#file-field').prop('disabled', true);
+        fileInput.prop('disabled', true);
+        // $('#file-field').prop('disabled', true);
         progressBar.text("Uploading done");
-
         // extract key and generate URL from response
         var key   = $(data.jqXHR.responseXML).find("Key").text();
         var url   = '//' + form.data('host') + '/' + key;
-
+        
         // create hidden field
         var input = $("<input />", { type:'hidden', name: fileInput.attr('name'), value: url });
         // form.append(input);
@@ -151,10 +211,31 @@ $("#file-field").change(function(){
       var reader = new FileReader();
       reader.onload = function (e) {
         $('.image-preview').attr('src', e.target.result);
+        $('.imgLiquidFill').imgLiquid({
+        fill: false,
+        horizontalAlign: "center",
+        verticalAlign: "50%"
+        });
       }
       reader.readAsDataURL(this.files[0]);
     }
 });
 
 
+
+$("#photo-file-field").change(function(){
+    var acceptedFileTypes = /(\.|\/)(gif|jpe?g|png)$/i;
+    if (this.files && this.files[0] && this.files[0].size/1024/1024 < 5 && acceptedFileTypes.exec(this.files[0]['type'])) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        $('.photo-preview').attr('src', e.target.result);
+        $('.photo').imgLiquid({
+        fill: false,
+        horizontalAlign: "center",
+        verticalAlign: "50%"
+        });
+      }
+      reader.readAsDataURL(this.files[0]);
+    }
+});
 </script>
